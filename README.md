@@ -1,12 +1,17 @@
 Welcome to the _Introduction to Data Formats in Computationaly Biology_ exercises page!
 
+# Slides
+
+*[Unix](slides/introduction_data_formats.pdf)
+*[Genomics](slides/genomic_data_formats.pdf)
+
 # Why? Good practices in computational biology
 
 Computational biology needs high standards to make results reproducible, track work, organize projects and collaborate with colleagues.
 
 To accomplish this we rely on sharing data and results using data standards (lingua franca) dealing with them using powerful and open tools (UNIX).
 
-Recommended read: (Wilson et al Good enough practices in scientific computing)[https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510]
+Recommended read: [Wilson et al Good enough practices in scientific computing](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510)
 
 # Disclaimer
 
@@ -63,6 +68,28 @@ ls -lah hg19.genome
 head hg19.genome
 
 ```
+
+## Retrieving software/compiling (bedtools)
+
+Retrieving source code and using a Makefile.
+
+
+```bash
+
+cd ~/course/soft
+curl -L https://github.com/arq5x/bedtools2/releases/download/v2.25.0/bedtools-2.25.0.tar.gz \
+  > bedtools-2.25.0.tar.gz
+
+tar zxvf bedtools-2.25.0.tar.gz
+cd bedtools2
+make  ## will take time!
+alias bedtools='~/course/soft/bedtools2/bin/bedtools'
+
+bedtools --help
+
+```
+
+# Exercises
 
 ## Exercise 1
 

@@ -94,15 +94,6 @@
 \end{frame}
 
 
-\begin{frame}
-  \frametitle{Reference genomes}
-  \begin{itemize}
-  \item Reference genomes describe the 'consensus' DNA sequence 
-  \item (Who is the human consensus for DNA sequencing?)
-  \item Aside of human variation, multiple assemblies have been released
-  \end{itemize}
-\end{frame}
-
 % \begin{frame}
 %   \frametitle{Sanger sequencing Nature 409, 863 (2001)}
 % \centering
@@ -138,6 +129,7 @@
 \begin{frame}
   \frametitle{Reference genomes: FASTA}
   \begin{itemize}
+  \item Reference genomes describe the 'consensus' DNA sequence 
   \item A reference genome is a collection of contigs/scaffolds
   \item  A contig is a stretch of DNA sequence encoded as A,G,C,T,N.	
   \item  Typically comes in FASTA format.		
@@ -206,6 +198,7 @@ ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAAT
 \end{frame}
 
 
+
 \begin{frame}
   \frametitle{Manually downloading the DIEXF promoter}
 \centering
@@ -239,7 +232,7 @@ ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAAT
 \end{frame}
 
 \begin{frame}
-  \frametitle{How to specify the DIEXF promoter in a reproducible manner?}
+  \frametitle{How?}
   Same concept that when we did manually:
   \begin{enumerate}
   \item Download the human genome sequence
@@ -252,7 +245,7 @@ ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAAT
 
 
 \begin{frame}
-  \frametitle{How to specify the DIEXF promoter? standards}
+  \frametitle{How? using data standards}
   Same concept that when we did manually + some standards
   \begin{enumerate}
   \item Download the human genome sequence (fasta)
@@ -266,9 +259,14 @@ ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAAT
 \begin{frame}
   \frametitle{Standards}
   \begin{itemize}
-  \item This we can do because the genome consortia and the science community release free data, software/toolsets
-  \item We benefit from the Unix-like operating systems
-  \item But the access to the same data and tools is not enough: the need for data standards 
+  \item This we can do because the genome consortia and the science community released open, free data and software/toolsets
+  \item To handle them we benefit from the Unix-like operating systems
+  \item We still need to use the same lingua francah: the need for data standards 
+    \begin{itemize}
+    \item Open
+    \item Efficent
+    \item Structured
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
@@ -820,7 +818,7 @@ chr22 2000 6000 cloneB 900 - 2000 6000 0 2 433,399, 0,3601
   \item So to sum up until now generally we have a reference genome, reads that were retrieved as FASTQ files, mapped and transformed to SAM files 
   \item So, at last, we can answer questions without the hurdle of dealing with sequences, i.e.
     \begin{itemize}
-    \item \item Which fraction of the human genome is covered by exons? 
+    \item Which fraction of the human genome is covered by exons? 
     \item Genomic locations of SNPs associated with prostate cancer?
     \item Are gene bodies more variable (in terms of SNPs) than intergenic regions?
     \end{itemize}
@@ -888,6 +886,18 @@ Steven M. Carr
   \frametitle{GTF and GFF3 fileformats}
   \begin{itemize}
   \item Reading: \url{https://www.ensembl.org/info/website/upload/gff.html}
+  \item Columns
+    \begin{enumerate}
+    \item seqname (chr/scaffold)
+    \item source - name of the program that generated this feature
+    \item feature -  e.g. Gene, Variation, Similarity
+    \item start - with sequence numbering starting at 1
+    \item end - end position of the feature, with sequence numbering starting at 1
+    \item score - A floating point value
+    \item strand - defined as + or -
+    \item frame - codon-related
+    \item attribute - additional information
+    \end{enumerate}
   \end{itemize}
 \end{frame}
 
@@ -1037,11 +1047,34 @@ fixedStep chrom=chr3 start=400601 step=100 span=5
 
 \begin{frame}
   \frametitle{On coordinates, 0s vs 1s and open and closed intervals}
-  \begin{itemize}
-  \item Remember the unusual 0 and 1 counting when converting BED, Wiggle and/or when using genomic positions at the UCSC genome browser  (very last part of the article \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/})
-  \end{itemize}
+  % \begin{itemize}
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+  % \end{itemize}
 \end{frame}
 
+
+\begin{frame}
+  \frametitle{UCSC Genome Browser web interface = 1-start, fully-closed}
+
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting2.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{UCSC Genome Browser tables = 0-start, half-open}
+
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting3.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+
+\end{frame}
 
 % \begin{frame}
 %   \frametitle{Activities}
@@ -1192,8 +1225,40 @@ fixedStep chrom=chr3 start=400601 step=100 span=5
 \end{frame}
 
 
+
 \begin{frame}
-  \frametitle{Sum up}
+  \frametitle{Sum-up I}
+\centering
+\includegraphics[height=0.8\textheight]{figures/repro3.png}
+
+{\tiny Baker M (2016) Is there a reproducibility crisis? Nature 533:452–454 9}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Sum-up II}
+  \begin{itemize}
+  \item Data
+    \begin{enumerate}
+    \item Using data standards
+    \item Raw data availability
+    \item Metadata
+    \item Intermediate datasets availability (mid-processed, i.e. BED files)
+    \end{enumerate}
+  \item In data analysis
+    \begin{enumerate}
+    \item Scripting everything
+    \item Version control
+    \item Trace software versions/automate installs
+    \item Release all code as supplementary information
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Sum-up III}
 
   \begin{itemize}
   \item Genomic data formats are structured and are suited to the different steps of NGS data analysis

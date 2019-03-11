@@ -1,6 +1,19 @@
 Welcome to the _Introduction to Data Formats in Computationaly Biology_ exercises page!
 
+These materials are part of the [COST Project Epichembio Bioinformatics workshop: Introduction to NGS data analysis](http://www.carrerasresearch.org/ca/bioinformatics-workshop-introduction-to-ngs-data-analysis_97398) held in Badalona the 13th to 15th of March 2019.
+
+# Acknowledgements
+
+* EU Horizon 2020 COST Project Epichembio
+* IJC Carreras Foundation
+* Organizers: Sarah, Marguerite-Marie, David, Roberto
+* SIB Swiss Institute of Bioinformatics and University of Zurich
+
 # Slides
+
+The course slides cover first why do we need scripted workflows with data stored using standards, in context of the best practices for scientific reproducibility; and after that discuss sequence formats (fasta, fastq), coordinate-based formats (BED, SAM, GTF, VCF..) and finally presents some tricks in efficience and speed-up (Wiggle files, indexed binary formats).
+
+Slides are linked to exercises (see below) that largely differ in complexity.
 
 * [Why good practices and data standards?](slides/1_why_standards_and_reproducibility.pdf)
 * [Introduction to data formats in genomics](slides/2_genomic_data_formats.pdf)
@@ -20,15 +33,6 @@ Recommended reads:
 # Disclaimer
 
 These exercises are meant to be run under a commodity computer (i.e. old laptop) running GNU/Linux or MacOS. To refresh your UNIX skills please run the tutorial at [SIB Course on UNIX](https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html).
-
-# Acknowledgements
-
-These materials are part of the [COST Project Epichembio Bioinformatics workshop: Introduction to NGS data analysis](http://www.carrerasresearch.org/ca/bioinformatics-workshop-introduction-to-ngs-data-analysis_97398) held in Barcelona the 13th to 15th of March 2019.
-
-* EU Horizon 2020 COST Project Epichembio
-* IJC Carreras Foundation
-* Organizers: Sarah, Marguerite-Marie, David, Roberto
-* SIB Swiss Institute of Bioinformatics and University of Zurich
 
 # Table of contents
 
@@ -62,11 +66,11 @@ Setting up a working directory with folders
 
 
 ```bash
-cd ~ # goes to the home directory
+cd ~                             # goes to the home directory
 mkdir -p course
 ls -l course
 
-mkdir -p course/data
+mkdir -p course/data course/soft # multiple directories can be created at once
 
 ls -l course
 
@@ -85,9 +89,9 @@ curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/example.bed \
 curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/hg19.genome \
    > hg19.genome
 
-file example.bed
-ls -lah example.bed
-head example.bed
+file example.bed     # which kind of file is it, is it text?
+ls -lah example.bed  # how big?
+head example.bed     # how do the first lines look like?
 
 file hg19.genome
 ls -lah hg19.genome
@@ -97,22 +101,21 @@ head hg19.genome
 
 ## Retrieving software/compiling (bedtools)
 
-Retrieving source code and using a Makefile to compile exactly the software version required.
-
+Retrieving source code and using a Makefile to compile exactly the software version required is a standard task in computational biology. Importantly, this can be scripted to make sure of dependencies/version. In this example we'll install bedtools (if not yet installed, which can be tested typing `bedtools --help` in a terminal).
 
 ```bash
 cd
-mkdir -p soft
+mkdir -p course/soft
 
-cd soft
+cd course/soft
 
 curl -L https://github.com/arq5x/bedtools2/releases/download/v2.25.0/bedtools-2.25.0.tar.gz \
   > bedtools-2.25.0.tar.gz
 
 tar zxvf bedtools-2.25.0.tar.gz
 cd bedtools2
-make  ## will take time! you could read about Makefiles during compiling time
-alias bedtools='~/soft/bedtools2/bin/bedtools'
+make  # will take time! you could read about Makefiles during compiling time
+alias bedtools='~/course/soft/bedtools2/bin/bedtools'
 
 bedtools --help
 

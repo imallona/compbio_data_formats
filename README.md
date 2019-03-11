@@ -172,6 +172,7 @@ head -5 ~/course/data/example.bed
 
 Using pipes (`|`): chain the `head -5` command before with  `wc -l` to make sure the number of lines was as expected (5).
 
+Seems a stupid thing to do? Actually it's a good idea to check some results during routine computational biology runs, i.e. whether the number of genes checked remains the same across samples and similar things. Negative and positive controls are easily transferable from wetlab to drylab [read more about unit testing in Wikipedia](https://en.wikipedia.org/wiki/Unit_testing).
 
 
 <details><summary>Answer</summary>

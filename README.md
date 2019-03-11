@@ -3,7 +3,7 @@ Welcome to the _Introduction to Data Formats in Computationaly Biology_ exercise
 # Slides
 
 * [Why good practices and data standards?](slides/1_why_standards_and_reproducibility.pdf)
-* [Genomics](slides/genomic_data_formats.pdf)
+* [Introduction to data formats in genomics](slides/2_genomic_data_formats.pdf)
 
 # Why? Good practices in computational biology
 
@@ -19,7 +19,7 @@ Recommended reads:
 
 # Disclaimer
 
-These exercises are meant to be run under GNU/Linux or MacOS. To get basic training in UNIX please run the tutorial at [SIB Course on UNIX](https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html) first.
+These exercises are meant to be run under a commodity computer (i.e. old laptop) running GNU/Linux or MacOS. To refresh your UNIX skills please run the tutorial at [SIB Course on UNIX](https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html).
 
 # Acknowledgements
 
@@ -627,7 +627,6 @@ cat ~/course/soft/bedtools2/test/intersect/b.bed
 What will happen if you intersect those files? For example, the `a.bed` region chr1:100-200 overlaps with `b.bed`
 
 ```bash
-alias bedtools='~/course/soft/bedtools2/bin/bedtools'
 
 bedtools intersect \
   -a  ~/course/soft/bedtools2/test/intersect/a.bed \

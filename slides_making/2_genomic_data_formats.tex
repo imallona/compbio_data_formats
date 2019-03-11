@@ -1,0 +1,1216 @@
+\documentclass{beamer}
+\usetheme{Warsaw} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[spanish]{babel}
+\usepackage{xcolor}
+\usepackage{soul}
+
+\usepackage{default}
+\usepackage{listings}
+% \usepackage{color}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+% \definecolor{links}{HTML}{2A1B81}
+\hypersetup{colorlinks,linkcolor=,urlcolor=blue}
+
+
+\title{Data standards in genomics}
+\institute{COST Project Epichembio - Introduction to NGS data analysis}
+\author[izaskun.mallona@sib.swiss]{Izaskun Mallona}
+
+\date{13th March 2019}
+
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% \section{Introduction}
+
+
+\begin{frame}
+  \frametitle{Acknowledgements}
+  \begin{itemize}
+  \item EU Horizon 2020 COST Project Epichembio 
+  \item IJC Carreras Foundation
+  \item Organizers: Sarah, Marguerite-Marie, David, Roberto
+  \item SIB Swiss Institute of Bioinformatics and Univ. Zurich
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Notes}
+  \begin{itemize}
+  \item Talk typesetting
+    \begin{itemize}
+    \item Commands/options are in \texttt{typewriter font}
+    \item URLs are highlighted in \href{https://genome-euro.ucsc.edu/cgi-bin/hgGateway}{blue}
+      % \item Exercises are highlighted in {\color{red}red}
+    \end{itemize}
+  \item Exercises
+    \begin{itemize}
+    \item Available at \href{https://github.com/imallona/compbio_data_formats}{the course GitHub repo}
+    \item Please use ad libitum (caution: there are 38 of them, exceeding the workshop workload)
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+% \section{Genomics data management}
+
+
+
+
+
+
+\begin{frame}
+  \frametitle{Commonly used formats}
+  \begin{itemize}
+
+  \item  Reference genomes
+
+  \item  Fasta and FastQ (Unaligned sequences)
+ 
+  \item SAM/BAM (Alignments)
+ 
+  \item BED (Genomic ranges)
+ 
+  \item GFF/GTF (Gene annotation)
+ 
+  \item Wiggle files, BEDgraphs (Genomic scores).
+ 
+
+  \item VCFs (variants)
+
+  \item (Indexed file formats)
+
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Reference genomes}
+  \begin{itemize}
+  \item Reference genomes describe the 'consensus' DNA sequence 
+  \item (Who is the human consensus for DNA sequencing?)
+  \item Aside of human variation, multiple assemblies have been released
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Sanger sequencing Nature 409, 863 (2001)}
+% \centering
+% \includegraphics[width=0.8\linewidth]{figures/10[1]_1038_nature01410-f1_full.jpg}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Hierarchical shotgun Nature 409, 863 (2001)}
+% \centering
+% \includegraphics[width=0.7\linewidth]{figures/v409_p861_409860a0-f2_FULL.jpg}
+% \end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{Reference genomes}
+%   GRCh stands for `Genome Reference Consortium`
+%   \begin{itemize}
+%   \item Human \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.13/}{GRCh37} (hg19)
+%   \item Human \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.38}{GRCh38}
+%   \item Mouse \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/}{mm10}
+%   \item Mouse \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.26}{GRCm38}
+
+%   \item Zebrafish, chicken and others: \url{https://www.ncbi.nlm.nih.gov/grc}{The Genome Reference consortium}
+
+%   \end{itemize}
+% \end{frame}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Reference genomes: FASTA}
+  \begin{itemize}
+  \item A reference genome is a collection of contigs/scaffolds
+  \item  A contig is a stretch of DNA sequence encoded as A,G,C,T,N.	
+  \item  Typically comes in FASTA format.		
+  \item  ">" line contains the scaffold name
+  \item  Following lines contain the sequence (single line, 80 nt-column sized...)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Reference genomes: FASTA}
+\begin{small}
+  \begin{verbatim}
+>NC_009902.1 Babesia bovis T2Bo mitochondrion (edited)
+TTTAAAAAAGTGTTAAAAACTTTATACATTAAAAAATTTAAACAAGTGATCATGTATAAA
+TACTGTGTAAATATCAAAAACAATTTAATTTCAAAATTTTTGAAATATGTTTTTTGTGTT
+GTTTTTTTTCAAAATTATATATGTTTGCATTTGCTGGATATAGTTCGGTCTCTGCAAACC
+CGGTATATCCTACATATGGCTTTCATATTGGTTTGGAGTTATTGGATTTTATATGAGTAT
+ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAAT
+  \end{verbatim}
+\end{small}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Patches, alternate loci and primary assembly}
+  \begin{itemize}
+  \item Primary assembly: the best known assembly of a haploid genome
+    \begin{itemize}
+    \item Chromosome assembly
+    \item Unlocalized sequence (associated to a chromosome but whose order/orientation is unknown)
+    \item Unplaced sequence (not linked to any chromosome)
+    \end{itemize}
+  \item  Alternate loci: An alternate representation of a locus (usually highly polimorphic regions, such as the MHC region)
+
+  \item Patches: A contig sequence that is released outside of the full assembly release
+    \begin{itemize}
+    \item Fix: error correction
+    \item Novel: new sequences that will be included into the next full assemblty release
+    \end{itemize}
+  % \item \url{http://lh3lh3.users.sourceforge.net/humanref.shtml}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Browsing genomic patches}
+  \begin{itemize}
+  \item Activity: browse genomic patches, i.e. \url{ftp://ftp.ncbi.nlm.nih.gov/genomes/all/GCA/000/001/405/GCA_000001405.27_GRCh38.p12/README_patch_release.txt}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Retrieving fasta sequences manually (UCSC)}
+\begin{itemize}
+\item Try to retrieve the \texttt{DIEXF} gene promoter
+\item (What is a promoter in terms of sequence?)
+\item Go to an assembly \url{https://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg38}
+\item Query gene symbol (i.e. \texttt{DIEXF})
+\item Click into the gene (gencode track)
+\item Click into the \texttt{sequence and links} item
+\item Specify your promoter definition
+
+\end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Manually downloading the DIEXF promoter}
+\centering
+\includegraphics[height=0.8\textheight]{figures/diexf1.png}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Manually downloading the DIEXF promoter}
+\centering
+\includegraphics[height=0.8\textheight]{figures/diexf2.png}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Manually downloading the DIEXF promoter}
+\centering
+\includegraphics[height=0.8\textheight]{figures/diexf3.png}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{How do we do this in a reproducible manner?}
+  \begin{itemize}
+  \item Scripting. We store an up-to-date reference genome in our computer (once)...
+  \item ... and then use specific file standards to specify the genome annotation (i.e. GTF, BED files).
+   % \item Activity: read the documentation of UCSC on how to download sequences \href{http://genome.ucsc.edu/FAQ/FAQdownloads.html\#download32}
+  \item Activity: read the documentation of UCSC on how to download sequences \href{http://genome.ucsc.edu/FAQ/FAQdownloads.html}{http://genome.ucsc.edu/FAQ/FAQdownloads.html} (section Extracting sequence in batch from an assembly) %\href{http://genome.ucsc.edu/FAQ/FAQdownloads.html}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{How to specify the DIEXF promoter in a reproducible manner?}
+  Same concept that when we did manually:
+  \begin{enumerate}
+  \item Download the human genome sequence
+  \item Download a file with all the genes (transcripts) locations (not sequences, but their coordinates)
+  \item Then select the gene we are looking for (DIEXF) 
+  \item Decide what a promoter is (i.e. 2 kb upstream of the gene) and update the coordinates accordingly
+  \item Then use a specific tool to slice the full genome to only report the DIEXF promoter
+  \end{enumerate}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{How to specify the DIEXF promoter? standards}
+  Same concept that when we did manually + some standards
+  \begin{enumerate}
+  \item Download the human genome sequence (fasta)
+  \item Download a file with all the genes (transcripts) locations (GTF)
+  \item Then select the gene we are looking for (DIEXF) (grep/awk)
+  \item Decide what a promoter is (i.e. 2 kb upstream of the gene) and update the coordinates accordingly (BEDfile, bedtools/awk)
+  \item Then use a specific tool to slice the full genome to only report the DIEXF promoter (bedtools)
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Standards}
+  \begin{itemize}
+  \item This we can do because the genome consortia and the science community release free data, software/toolsets
+  \item We benefit from the Unix-like operating systems
+  \item But the access to the same data and tools is not enough: the need for data standards 
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Commonly used formats}
+  \begin{itemize}
+
+  \item \textbf{Fasta and FastQ}
+ 
+  \item SAM/BAM (Alignments)
+ 
+  \item BED (Genomic ranges)
+ 
+  \item GFF/GTF (Gene annotation)
+ 
+  \item BEDgraphs (Genomic ranges)
+ 
+  \item Wiggle files, BEDgraphs and BigWigs (Genomic scores).
+ 
+  \item Indexed BEDgraphs/Wiggles
+
+  \item VCFs (variants)
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Short reads sequencing}
+  \begin{itemize}
+  \item Sequencing very short reads (50 to 150 nucleotides) is common practice
+  \item We get hundreds of millions of short reads for each experiment
+  \item Instead of assembling them, we map them into a reference genome
+  \item Activity: read \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2836519/}
+  \item Sequencers provide sequence and error rates assessment: \texttt{fasta} format is not suitable, but \texttt{fastq} is
+  \end{itemize}
+\end{frame}
+
+% \subsection{fastq}
+
+\begin{frame}[fragile]
+  \frametitle{FASTQ: Short read sequencing}
+  \begin{itemize}
+  \item Next step to FASTA: including quality data
+  \item Standard de facto for short read, high-throughput sequencing instruments such (i.e. Illumina)
+  \end{itemize}
+
+
+\begin{verbatim}
+@SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
+GGGTGATGGCCGCTGCCGATGGCGTCAAATCCCACC
++
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
+\end{verbatim}
+
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{phred scores}
+  \begin{itemize}
+  \item Sequence quality is represented using Phred scores
+  \item The sequencing quality score of a given base Q is defined by as
+  \item $Q = -10 \ \log_{10} P$
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{phred scores}
+\centering
+\includegraphics[width=\textwidth]{figures/phred.png}
+\end{frame}
+
+\begin{frame}
+\frametitle{phred scores (old school Sanger electrophoretogram)}
+\centering
+\includegraphics[width=\textwidth]{figures/phred_electro.png}  
+\end{frame}
+% \begin{itemize}
+% \item 
+% \end{itemize}
+
+
+% \begin{frame}
+%   \frametitle{Phred scores}
+%   \begin{itemize}
+%   \item Activity: read 
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Phred scores encoding}
+  \begin{itemize}
+  \item There are several Phred score encodings:
+  \item Activity: read about the Quality scores offsets at \url{https://en.wikipedia.org/wiki/FASTQ_format} and \url{https://wiki.bits.vib.be/index.php/Identify_the_Phred_scale_of_quality_scores_used_in_fastQ}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Phred scores encoding (Wikipedia)}
+\includegraphics[width=\textwidth]{figures/phred_alignment.png}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Unaligned sequences (from sequencers): FASTQ}
+  \begin{itemize}
+  \item FASTQs stands for FASTA with Qualities
+  \item Plain text files with chunks of four lines:
+    \begin{itemize}
+    \item  @ identifier line
+    \item Sequence
+    \item  "+" 	(sometimes the sequence name, again)
+    \item Quality scores (different encodings exist)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Example FASTQ entry}
+\begin{verbatim}
+@SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
+GGGTGATGGCCGCTGCCGATGGCGTCAAATCCCACC
++
+IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
+\end{verbatim}
+\end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Unaligned sequences (from sequencers): FASTQ}[fragile]
+%   \begin{itemize}
+%   \item FASTQ header
+%     \begin{itemize}
+%     \item 
+%     \end{itemize}
+%   \item Qualities
+%     \begin{itemize}
+%     \item 
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Unaligned sequences (from sequencers): FASTQ (paired end)}
+% \begin{verbatim}
+% @SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
+% GGGTGATGGCCGCTGCCGATGGCGTCAAATCCCACC
+% +SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
+% IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
+% \end{verbatim}
+%   \begin{itemize}
+%   \item  machine name HS2000-887\_89 - Machine name.		
+%   \item  5 - Flowcell lane.		
+%   \item  read in pair
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{FASTQ qualities}
+%   \begin{itemize}
+%   \item  phred score -log10 probability of sequence being wrong
+%   \item  encoded in ASCII
+
+%   \end{itemize}
+% \end{frame}
+
+
+
+\begin{frame}
+  \frametitle{In class exercises for fastq}
+  \begin{itemize}
+  \item Activity: FASTQ/A exercises (exercises 5 to 14)
+  \end{itemize}
+\end{frame}
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Working with fastq files}
+% \begin{small}
+% \begin{verbatim}
+% ## retrieving an example fastq file
+% curl  https://molb7621.github.io/workshop/_downloads/SP1.fq \
+%  > file.fastq
+
+% ## counting number of reads
+% awk 'END{print NR/4}' file.fastq
+
+% ## transforming into fasta
+% awk 'NR % 4 == 1 {print ">"$1}; 
+%      NR % 4 == 2 {print}' file.fasta
+
+% \end{verbatim}
+% \end{small}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Further manuals on awk}
+%   \begin{itemize}
+%   \item \url{https://en.wikipedia.org/wiki/AWK}
+%   % \item \href{http://bioinformatics.cvr.ac.uk/blog/essential-awk-commands-for-next-generation-sequence-analysis/}{AWK essentials manual}
+%   \item \url{http://www.grymoire.com/Unix/Awk.html}
+%   \end{itemize}
+% \end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{awk: Counting the number of items in a fastq}
+
+So in fastq each data chunk is stored in four different lines. We'll need to be able to extract the first, second, third of fourth line for each block of four lines. Using awk,
+
+\begin{verbatim}
+awk 'END{print NR/4}' file.fastq
+\end{verbatim}
+\begin{itemize}
+  
+  \item NR gives the number of records (line numbers)
+  \item FASTQ are chunks of 4 lines for each sequence
+  \item NR/4 at the END of the file indicates the number of sequences
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Working with fastq files}
+\begin{small}
+\begin{verbatim}
+## retrieving an example fasta file
+curl  https://molb7621.github.io/workshop/_downloads/SP1.fq \
+ > file.fastq
+
+## counting number of reads
+awk 'END{print NR/4}' file.fastq
+
+## transforming into fasta
+awk 'NR%4==1{a=substr($0,2);} NR%4==2 {print ">"a"\n"$0}' \
+  file.fastq
+
+\end{verbatim}
+\end{small}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{awk: fastq to fasta}
+\begin{small}
+\begin{verbatim}
+awk 'NR%4==1{a=substr($0,2);} NR%4==2 {print ">"a"\n"$0}' \
+  file.fastq
+\end{verbatim}
+\end{small}
+  \begin{itemize}
+  \item \% is a modulo operator
+  \item NR\%4==1 will retrieve the first line of a fastq chunk (header)
+  \item NR\%4==2 will retrieve the second line (the sequence)
+  \item the id line will be preprended with the $>$ and reduced to a substring (chopped)
+  \item This will be applied to all lines!
+
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{Exercise using awk}
+%   \begin{itemize}
+%   \item Get a file with just the first 10 nucleotides of each sequence
+%   \item Tip \url{http://thomas-cokelaer.info/blog/2011/05/awk-the-substr-command-to-select-a-substring/}
+% % \begin{verbatim}
+% % awk 'NR%4==2{a=substr($0,0,10);} {print a}'  \
+% %   file.fastq
+% % \end{verbatim}
+%   \end{itemize}
+% \end{frame}
+
+
+\begin{frame}
+  \frametitle{Still need to align the FASTQ reads to the reference genome}
+  \begin{itemize}
+  \item Discussion: how to get rid of the sequences and to have a smaller data representation?
+  \item Trying to transform sequence to reference genome coordinates (= aligning to the genome/mapping) 
+  \item i.e. transforming \texttt{ACGCACGCACGCACGCCCC} to human genome hg19 `chr10:10010-10030`
+  \end{itemize}
+\end{frame}
+
+
+% \subsection{SAM}
+
+\begin{frame}
+  \frametitle{Alignment file format}
+  \begin{itemize}
+  \item  SAM - Sequence Alignment Map.	
+  \item The standard stores where the reads (i.e. the ones we had as FASTQs) map in the reference genome
+  \item  Recognised by majority of software and browsers: standard
+
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{What is an alignment?}
+  \begin{itemize}
+  \item Sequence alignment: arrange a set of sequences to identify regions of similarity/identity
+  \item Mapping short reads against a reference genome: aligning large amounts short reads to a reference genome
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Local alignments vs global alignment}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/global_semiglobal.jpg}
+
+Alachiotis et al, 2013
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{SAM format}
+
+  \begin{itemize}
+  \item  Chromosome
+  \item  Locus (coordinate)
+  \item  CIGAR string, i.e.
+  \item 30M1D2M - 30 bases continuously match, 1 deletion from reference, 2 base match	
+  \item  Some flags (\url{https://broadinstitute.github.io/picard/explain-flags.html})
+
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{CIGAR strings}
+  \begin{itemize}
+  \item Activity: read a post on CIGAR encoding \url{http://bioinformatics.cvr.ac.uk/blog/tag/cigar-string/} (please skip the Java code)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Next generation sequencing to SAM}
+\centering
+\includegraphics[width=0.7\textwidth]{figures/DNA-sequencing-DNA-sequencing-1st-step-The-DNA-of-interest-is-purified-and-extracted_W640.jpg}
+
+\href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Next generation sequencing to SAM}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/FASTQ-file-1st-line-always-starts-with-the-symbol-followed-by-the-sequence_W640.jpg}
+
+\href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Next generation sequencing to SAM}
+\centering
+\includegraphics[width=\textwidth]{figures/BAM-SAM-files-Example-of-an-alignment-to-the-reference-sequence-pileup-A-Read-r001-1_W640.jpg}
+
+\href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{SAM format}
+  \begin{itemize}
+  \item Activity: read the SAM format specification
+  \item \url{https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2723002/}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Exercises on SAM files}
+  \begin{itemize}
+  \item Exercise number 15
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{Parsing SAM files}
+% \begin{small}
+% \begin{verbatim}
+% curl -L curl https://github.com/samtools/samtools/raw/develop/examples/ex1.sam.gz \
+%   > ex1.sam.gz
+
+% gunzip ex1.sam.gz
+% head ex1.sam
+
+% \end{verbatim}
+% \end{small}
+% \end{frame}
+
+
+
+
+% \begin{frame}
+%   \frametitle{Unraveling genomic variation from next generation sequencing data}
+%   \begin{itemize}
+%   \item \url{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}
+%   \end{itemize}
+% \end{frame}
+
+
+
+%% saved some images Downloads
+
+
+% \begin{frame}
+%   \frametitle{BAM format}
+%  % Compilation into binary files
+
+% % get header etc
+% % etitle{}
+%   \begin{itemize}
+%   \item 
+%   \end{itemize}
+% \end{frame}
+
+
+% \section{BED files}
+
+\begin{frame}
+  \frametitle{From SAM to BED: counts}
+  \begin{itemize}
+  \item BED files are simpler data representations, usually the next step after getting the SAM files
+  \item Why? they are smaller and easier to handle
+  \item For instance, after mapping a new genome-wide sequencing BED files with the genomic coverages are generated
+  \item Discussion: how to handle expression data, i.e. transcripts without introns etc? how do we count them?
+  \item Activity: read \url{https://bedtools.readthedocs.io/en/latest/content/tools/genomecov.html}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Keep it simple: count and transform into BED files}
+  \begin{itemize}
+  \item BED (Browser Extensible Data) files come in different flavours
+
+  \item BED3: 3 tab separated columns, chromosome (scaffold), start, end
+
+  \item BED6: BED3 plus name, score, strand
+
+
+% exercise: convert bed6 to bed3
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}[fragile]
+  \frametitle{BED3}
+\begin{verbatim}
+chr22 1000 5000
+chr22 2000 6000
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{BED6}
+\begin{verbatim}
+chr22 1000 5000 cloneA 960 +
+chr22 2000 6000 cloneB 900 -
+\end{verbatim}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{BED12}
+\begin{verbatim}
+chr22 1000 5000 cloneA 960 + 1000 5000 0 2 567,488, 0,3512
+chr22 2000 6000 cloneB 900 - 2000 6000 0 2 433,399, 0,3601
+\end{verbatim}
+\end{frame}
+
+
+% bedtools here and upload to genome browser here
+
+% \begin{frame}
+%   \frametitle{Comprexing and indexing}
+%   \begin{itemize}
+%   \item  SAM -> BAM (.bam and index file of .bai)		
+%   \item  Wiggle and bedGraph -> bigWig		
+%   \item  BED -> bigBed (.bb)		
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Data repositories}
+%   \begin{itemize}
+%   \item UCSC
+%   \item Ensembl
+% %  \item check the ones in github
+%   \end{itemize}
+
+% \end{frame}
+
+% add reading exercises etc
+
+
+% \begin{frame}
+%   \frametitle{Exercise: reference genomes}
+%   \begin{itemize}
+%   \item Retrieve the mitochondrial genome from UCSC
+%   \item 
+%   \end{itemize}
+% \end{frame}
+
+
+
+% \end{document}
+
+
+
+\begin{frame}
+  \frametitle{How do we count? 0s and 1s}
+  \begin{itemize}
+  \item Even though BED files are standard how to count nucleotides is not
+  \item 0-start vs. 1-start : Does counting start at 0 or 1?
+  \item For a counted range, is the specified interval fully-open, fully-closed, or a hybrid-interval (e.g., half-open)? 
+  \item Activity: read \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Activities}
+  \begin{itemize}
+  \item BEDfiles are one of the most usual intermediate data files to look for genomic associations
+  \item BEDtools and other tools integrate BED files
+  \item Exercises 16 to 24
+  \end{itemize}
+\end{frame}
+
+% activities here
+
+\begin{frame}
+  \frametitle{The need for further data formats}
+  \begin{itemize}
+  \item So to sum up until now generally we have a reference genome, reads that were retrieved as FASTQ files, mapped and transformed to SAM files 
+  \item So, at last, we can answer questions without the hurdle of dealing with sequences, i.e.
+    \begin{itemize}
+    \item \item Which fraction of the human genome is covered by exons? 
+    \item Genomic locations of SNPs associated with prostate cancer?
+    \item Are gene bodies more variable (in terms of SNPs) than intergenic regions?
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+% \subsection{GFF/GTF}
+\begin{frame}
+  \frametitle{Moving forward: what to deal with annotation?}
+  \begin{itemize}
+  \item Genomic annotations are layers to genomic coordinates specifying their nature
+  \end{itemize}
+\centering
+\includegraphics[width=\textwidth]{figures/annot.png}
+
+Henrik Lantz, BILS/SciLifeLab
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{How to store genomic annotations? GFF3}
+  
+\centering
+\includegraphics[width=\textwidth]{figures/gff3.png}
+
+Henrik Lantz, BILS/SciLifeLab
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{How to store genomic annotations? GTF}
+  
+\centering
+\includegraphics[width=\textwidth]{figures/gtf.png}
+
+Henrik Lantz, BILS/SciLifeLab
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Why so complex? Open reading frames}
+  
+\centering
+\includegraphics[width=\textwidth]{figures/orf.png}
+
+Steven M. Carr 
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Why so complex? CDS, exons, introns, stop codons}
+  \begin{itemize}
+  \item How many transcript does a gene have?
+  \item Are they tissue dependent?
+  \item How can we annotate the different between transcription and translation?
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{GTF and GFF3 fileformats}
+  \begin{itemize}
+  \item Reading: \url{https://www.ensembl.org/info/website/upload/gff.html}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Activity}
+  \begin{itemize}
+  \item Run exercises 25 to 27
+  \end{itemize}
+\end{frame}
+
+%exercise retrieve annotation for a given chromosome etc
+
+% \subsection{BEDgraphs}
+
+
+\begin{frame}
+  \frametitle{On data optimization}
+  \begin{itemize}
+  \item Till now: short NGS sequences (FASTQ) get mapped into reference genomes (FASTA) giving rise to alignments (SAM) that are summarized as BED files.
+  \item Next step is basically data mining and visualization
+  \item Let's focus on the latter: genomic tracks for genome browser-based visualization
+  \item Track formats with increased efficiency
+    \begin{itemize}
+    \item BEDgraph
+    \item bigBed (indexed BED file, not plain text!)
+    \item Wiggle (Wig)
+    \item bigWig (indexed Wiggle file, not plain text!)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{BEDgraph}
+\begin{verbatim}
+chromA  chromStartA  chromEndA  dataValueA
+chromB  chromStartB  chromEndB  dataValueB
+\end{verbatim}
+\begin{verbatim}
+chr19 49303800 49304100 0.50
+chr19 49304100 49304400 0.75
+chr19 49304400 49304700 1.00
+\end{verbatim}
+\begin{itemize}
+    \item To display continuous-valued data in track format.
+    \item Uuseful for probability scores
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Which are the differences between BEDgraphs and BED?}
+  \begin{itemize}
+  \item BED, BED, BED12?
+  \item Advantages: the coordinates are specified, so sparsity is allowed
+  \item Next step in file formats: trying to cover all the genome (that is, no sparsity anymore)
+  \item Example: does it make sense to generate a BED file with GC content? (\href{https://en.wikipedia.org/wiki/GC-content}{GC content at Wikipedia})
+  \item How can we store features with definite start and ends but for which the value is the primary purpose, but not their starts and ends?
+  \end{itemize}
+\end{frame}
+
+% convert bed6 to bedgraph dividing by whatever
+
+% \subsection{Wiggle}
+
+
+
+\begin{frame}
+  \frametitle{Wig files}
+  \begin{itemize}
+  \item Imagine we'd like to visualize a track with the GC percent of 10nt bins
+  \item Would it be a good idea to store it as a four-column BED with \texttt{chr, start, end} filling 3/4s of the file?
+  \item Wiggle format deals with it: ideal for continuous data measured at a given step (bin size, length)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+
+  \begin{itemize}
+  \item How to store the GC content of 10nt sized bins in less than 4 columns?
+  \item Specifying the value, the span and the step
+  \end{itemize}
+
+  \frametitle{Wig}
+\begin{verbatim}
+variableStep chrom=chr2
+300701 12.5
+300702 12.5
+300703 12.5
+300704 12.5
+300705 12.5
+300706 12.5
+300707 12.5
+300708 12.5
+300709 12.5
+300710 12.5
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Wig with added span}
+
+  \begin{itemize}
+  \item Can we reduce it further? Two columns it's too much! 
+  \item Specifying the value and the step with a fixed span (10 nt)
+  \end{itemize}
+
+\begin{verbatim}
+variableStep chrom=chr2 span=10
+300701 12.5
+\end{verbatim}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Wig with fixedStep and span}
+  \begin{itemize}
+  \item Can we reduce it further? That was less rows, but still three columns!
+  \item Specifying the value and the step with a fixed span and step
+  \end{itemize}
+
+\begin{verbatim}
+fixedStep chrom=chr3 start=400601 step=100 span=5
+11
+22
+33 
+\end{verbatim}
+
+  \begin{itemize}
+  \item This format reports a score of 11, 22, 33 to 5nt-long bins that are 100 nt apart, starting from the nt 0 of chromosome 3
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Activity}
+  \begin{itemize}
+  \item Read more on Wig files at \url{https://genome.ucsc.edu/goldenpath/help/wiggle.html}
+  \end{itemize}
+\end{frame}
+
+% \subsection{VCFs}
+
+
+
+\begin{frame}
+  \frametitle{On coordinates, 0s vs 1s and open and closed intervals}
+  \begin{itemize}
+  \item Remember the unusual 0 and 1 counting when converting BED, Wiggle and/or when using genomic positions at the UCSC genome browser  (very last part of the article \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/})
+  \end{itemize}
+\end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Activities}
+%   \begin{itemize}
+%   \item Run exercises 16 to 24
+%   \end{itemize}
+% \end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Variant Call Format}
+  \begin{itemize}
+  \item Standard file format for storing variation data
+  \item  Unambiguous, scalable and flexible
+  \item Not suprisingly, structured text file
+  \item 8 columns: 
+
+
+    
+    \begin{enumerate}
+    \item  CHROM
+     \item  POS
+    \item   ID
+    \item   REF
+     \item  ALT
+     \item  QUAL
+     \item  FILTER
+     \item  INFO
+    \end{enumerate}
+
+
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{VCF}
+\includegraphics[width=\textwidth]{figures/vcf.png}
+
+\href{https://www.ebi.ac.uk/training/online/course/human-genetic-variation-introduction/exercise-title/want-know-how-we-did-it}{EMBL/EBI training}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Quality values: which one?}
+
+  \begin{itemize}
+  \item Phred-scaled quality score for the assertion made in ALT. i.e. $Q = -10 \ \log_{10} P$  being $P$(call in ALT is wrong)
+  \item Read quality
+  \item Mapping quality
+  \item Variant calling quality
+  \end{itemize}
+\end{frame}
+
+
+
+
+
+\begin{frame}
+  \frametitle{Variant calling}
+  \begin{itemize}
+  \item Lecture by Michael Lawrence (VariantExplore package)
+  \item \url{https://www.bioconductor.org/help/course-materials/2014/CSAMA2014/3_Wednesday/lectures/VariantCallingLecture.pdf}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{The VCF format}
+  \begin{itemize}
+  \item Activity: read \url{http://www.internationalgenome.org/wiki/Analysis/Variant\%20Call\%20Format/vcf-variant-call-format-version-40}
+  \end{itemize}
+\end{frame}
+
+
+% \begin{frame}[fragile]
+% \begin{verbatim}
+% curl -L ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/pilot_data/release/2010_07/trio/snps/trio.2010_06.ychr.sites.vcf.gz \
+%  > trio.vcf.gz
+
+% gunzip trio.vcf.gz
+
+
+% \end{verbatim}
+% \end{frame}
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Get chromosome 21 variants}
+% \begin{verbatim}
+% curl -L https://raw.githubusercontent.com/VCCRI/SVPV/master/example/lumpy.vcf > \
+%   lumpy.vcf
+
+% awk '$1 == "chr21" && $7 == "PASS" { print }' lumpy.vcf
+
+% get those with qvalue over 30
+
+% \end{verbatim}
+% \end{frame}
+
+
+% \end{document}
+
+
+% \begin{frame}
+%   \frametitle{Setting up an UCSC trackhub}
+
+% \begin{itemize}
+% \item https://genome.ucsc.edu/goldenpath/help/hgTrackHubHelp.html
+% \end{itemize}
+
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Indexed formats}
+% \end{frame}
+
+% rtracklayer?
+
+
+\begin{frame}
+  \frametitle{Further activities}
+  \begin{itemize}
+  \item Run exercises from 28 on
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Indexed binary file formats}
+
+  \begin{itemize}
+  \item Most of the data formats can be indexed for fast accessing using data information tricks
+  \item Standard toolsets, i.e. samtools, vcftools etc can convert between plain text and indexed formats
+
+    \begin{itemize}
+    \item SAM, alignments: BAM
+    \item BED or BedGraph, coordinate-based data: bigBed
+    \item Wiggle, compact coordinate-based data: bigWig
+    \item VCF, binary: BCF
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Sum up}
+
+  \begin{itemize}
+  \item Genomic data formats are structured and are suited to the different steps of NGS data analysis
+  \item There are open source toolsets for any of them
+  \item They are either plain text files or indexed versions of them that using nonpropietary formats
+  \item As text files, they can be fastly processed using Unix
+    \begin{itemize}
+    \item FASTA, FASTQ sequences
+    \item SAM, alignments (binary: BAM)
+    \item GTF and GFF, annotations
+    \item BED, BedGraph, coordinate-based data (binary: bigBed)
+    \item Wiggle, compact coordinate-based data (binary: bigWig)
+    \item VCF, variants (binary: BCF)
+    \end{itemize}
+  \end{itemize}
+
+\end{frame}
+
+
+\end{document}

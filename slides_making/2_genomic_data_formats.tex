@@ -70,6 +70,9 @@
 
 \begin{frame}
   \frametitle{Commonly used formats}
+
+Meant to provide an usable information representation for each NGS processing data step
+
   \begin{itemize}
 
   \item  Reference genomes
@@ -92,6 +95,10 @@
 
   \end{itemize}
 \end{frame}
+
+
+
+
 
 
 % \begin{frame}
@@ -388,16 +395,25 @@ IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
 \end{frame}
 
 
-
-\begin{frame}[fragile]
+\begin{frame}
   \frametitle{Example FASTQ entry}
-\begin{verbatim}
-@SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
-GGGTGATGGCCGCTGCCGATGGCGTCAAATCCCACC
-+
-IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
-\end{verbatim}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/FASTQ-file-1st-line-always-starts-with-the-symbol-followed-by-the-sequence_W640.jpg}
+
+\href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
 \end{frame}
+
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Example FASTQ entry}
+% \begin{verbatim}
+% @SRR001666.1 071112_SLXA-EAS1_s_7:5:1:817:345 length=36
+% GGGTGATGGCCGCTGCCGATGGCGTCAAATCCCACC
+% +
+% IIIIIIIIIIIIIIIIIIIIIIIIIIIIII9IG9IC
+% \end{verbatim}
+% \end{frame}
 
 
 % \begin{frame}
@@ -595,7 +611,7 @@ Alachiotis et al, 2013
   \item  Chromosome
   \item  Locus (coordinate)
   \item  CIGAR string, i.e.
-  \item 30M1D2M - 30 bases continuously match, 1 deletion from reference, 2 base match	
+  \item 30M1D2M - 30 bases match (actually can be a mismatch, but present in the reference), 1 deletion from reference, 2 base match	
   \item  Some flags (\url{https://broadinstitute.github.io/picard/explain-flags.html})
 
   \end{itemize}
@@ -612,7 +628,7 @@ Alachiotis et al, 2013
 
 
 \begin{frame}
-  \frametitle{Next generation sequencing to SAM}
+  \frametitle{Aligning NGS reads to a reference}
 \centering
 \includegraphics[width=0.7\textwidth]{figures/DNA-sequencing-DNA-sequencing-1st-step-The-DNA-of-interest-is-purified-and-extracted_W640.jpg}
 
@@ -620,19 +636,14 @@ Alachiotis et al, 2013
 \end{frame}
 
 
-\begin{frame}
-  \frametitle{Next generation sequencing to SAM}
-\centering
-\includegraphics[width=0.8\textwidth]{figures/FASTQ-file-1st-line-always-starts-with-the-symbol-followed-by-the-sequence_W640.jpg}
 
-\href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
-\end{frame}
 
 
 \begin{frame}
   \frametitle{Next generation sequencing to SAM}
 \centering
-\includegraphics[width=\textwidth]{figures/BAM-SAM-files-Example-of-an-alignment-to-the-reference-sequence-pileup-A-Read-r001-1_W640.jpg}
+
+\hspace{-1cm} \includegraphics[width=1.1\textwidth]{figures/BAM-SAM-files-Example-of-an-alignment-to-the-reference-sequence-pileup-A-Read-r001-1_W640.jpg}
 
 \href{https://biodatamining.biomedcentral.com/articles/10.1186/1756-0381-6-13}{Pavlopoulos et al 2013}
 \end{frame}
@@ -797,8 +808,40 @@ chr22 2000 6000 cloneB 900 - 2000 6000 0 2 433,399, 0,3601
   \item Even though BED files are standard how to count nucleotides is not
   \item 0-start vs. 1-start : Does counting start at 0 or 1?
   \item For a counted range, is the specified interval fully-open, fully-closed, or a hybrid-interval (e.g., half-open)? 
-  \item Activity: read \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}
   \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{On coordinates, 0s vs 1s and open and closed intervals}
+  % \begin{itemize}
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+  % \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{UCSC Genome Browser web interface = 1-start, fully-closed}
+
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting2.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{UCSC Genome Browser tables = 0-start, half-open}
+
+    \centering   
+    \includegraphics[width=0.8\textwidth]{figures/counting3.png}
+
+ {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
+
 \end{frame}
 
 \begin{frame}
@@ -933,10 +976,16 @@ Steven M. Carr
 
 \begin{frame}[fragile]
 \frametitle{BEDgraph}
+
+Conceptually:
+
 \begin{verbatim}
 chromA  chromStartA  chromEndA  dataValueA
 chromB  chromStartB  chromEndB  dataValueB
 \end{verbatim}
+
+That with real data looks like this:
+
 \begin{verbatim}
 chr19 49303800 49304100 0.50
 chr19 49304100 49304400 0.75
@@ -1045,36 +1094,6 @@ fixedStep chrom=chr3 start=400601 step=100 span=5
 
 
 
-\begin{frame}
-  \frametitle{On coordinates, 0s vs 1s and open and closed intervals}
-  % \begin{itemize}
-    \centering   
-    \includegraphics[width=0.8\textwidth]{figures/counting.png}
-
- {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
-  % \end{itemize}
-\end{frame}
-
-
-\begin{frame}
-  \frametitle{UCSC Genome Browser web interface = 1-start, fully-closed}
-
-    \centering   
-    \includegraphics[width=0.8\textwidth]{figures/counting2.png}
-
- {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
-
-\end{frame}
-
-\begin{frame}
-  \frametitle{UCSC Genome Browser tables = 0-start, half-open}
-
-    \centering   
-    \includegraphics[width=0.8\textwidth]{figures/counting3.png}
-
- {\tiny \url{http://genome.ucsc.edu/blog/the-ucsc-genome-browser-coordinate-counting-systems/}}
-
-\end{frame}
 
 % \begin{frame}
 %   \frametitle{Activities}
@@ -1202,7 +1221,9 @@ fixedStep chrom=chr3 start=400601 step=100 span=5
 \begin{frame}
   \frametitle{Further activities}
   \begin{itemize}
-  \item Run exercises from 28 on
+  \item To sum-up, coordinate-based files allow to answer quite complex biological questions.
+  \item For instance, if checking real somatic transposon insertions from the 1000 genomes project variants (VCFs) can we detect any enrichment for certain chromatin states?
+  \item (If you have the time/interest run) exercises from 28 on
   \end{itemize}
 \end{frame}
 
@@ -1246,7 +1267,7 @@ fixedStep chrom=chr3 start=400601 step=100 span=5
     \item Metadata
     \item Intermediate datasets availability (mid-processed, i.e. BED files)
     \end{enumerate}
-  \item In data analysis
+  \item Analysis
     \begin{enumerate}
     \item Scripting everything
     \item Version control

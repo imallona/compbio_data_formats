@@ -34,6 +34,9 @@ Recommended reads:
 
 These exercises are meant to be run under a commodity computer (i.e. old laptop) running GNU/Linux or MacOS. To refresh your UNIX skills please run the tutorial at [SIB Course on UNIX](https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html).
 
+As a backup, the [repository data folder](https://github.com/imallona/compbio_data_formats/tree/master/data) has a backup of all datasets used, and the script `get_data.sh` to retrieve them.
+
+
 # Table of contents
 
 Exercises complexity goes from low to challenging. Namely, from counting the number of lines of a fasta file or using the modulus operator to do so in FASTQ to dissecting chromatin compartmentalization trends in 1000 genomes project transposon variants. Please note gluttony is encouraged but exercises listing exceeds the workshop's workload.

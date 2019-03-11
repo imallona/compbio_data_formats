@@ -2,8 +2,8 @@ Welcome to the _Introduction to Data Formats in Computationaly Biology_ exercise
 
 # Slides
 
-*[Unix](slides/introduction_data_formats.pdf)
-*[Genomics](slides/genomic_data_formats.pdf)
+* [Unix](slides/1_why_standards_and_reproducibility.pdf)
+* [Genomics](slides/genomic_data_formats.pdf)
 
 # Why? Good practices in computational biology
 
@@ -11,7 +11,11 @@ Computational biology needs high standards to make results reproducible, track w
 
 To accomplish this we rely on sharing data and results using data standards (lingua franca) dealing with them using powerful and open tools (UNIX).
 
-Recommended read: [Wilson et al Good enough practices in scientific computing](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510)
+Recommended reads:
+
+* [Wilson et al Good enough practices in scientific computing](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005510)
+* [Brian Excuse me, do you have a moment to talk about version control?](https://peerj.com/preprints/3159/)
+* [Data carpentry lessons](https://datacarpentry.org/lessons/#genomics-workshop)
 
 # Disclaimer
 

@@ -1,0 +1,928 @@
+\documentclass{beamer}
+\usetheme{Warsaw} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+% \usepackage[spanish]{babel}
+\usepackage{xcolor}
+\usepackage{soul}
+
+\usepackage{default}
+\usepackage{listings}
+% \usepackage{color}
+\usepackage{graphicx}
+\usepackage[normalem]{ulem}
+% \definecolor{links}{HTML}{2A1B81}
+\hypersetup{colorlinks,linkcolor=,urlcolor=blue}
+
+% \usepackage{xcolor}
+% \usepackage{soul}
+% \sethlcolor{blue}
+% \renewcommand{\texttt}[1]{\hl{\ttfamily #1}}
+
+
+% \definecolor{Light}{gray}{.90}
+% \sethlcolor{Light}
+
+% \let\OldTexttt\texttt
+% \renewcommand{\texttt}[1]{\OldTexttt{\hl{#1}}}% will affect all \texttt
+% %\newcommand{\hltexttt}[1]{\texttt{\hl{#1}}}% comment above \renewcommand if want this
+
+
+% \usepackage[dvipsnames,svgnames,x11names]{xcolor} % for lots of predefined color names
+% \renewcommand\texttt[2][blue]{\textcolor{#1}{\texttt{#2}}}
+
+
+\title{Why standards? Good practices in computational biology}
+\institute{COST Project Epichembio - Introduction to NGS data analysis}
+\author[izaskun.mallona@sib.swiss]{Izaskun Mallona}
+
+\date{13th March 2019}
+
+% \DeclareUnicodeCharacter{00A0}{ }
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Acknowledgements}
+  \begin{itemize}
+  \item EU Horizon 2020 COST Project Epichembio 
+  \item IJC Carreras Foundation
+  \item Organizers: Sarah, Marguerite-Marie, David, Roberto
+  \item SIB Swiss Institute of Bioinformatics and Univ. Zurich
+  \end{itemize}
+\end{frame}
+
+% \section{Introduction}
+
+
+
+\begin{frame}
+  \frametitle{Talk typesetting}
+  \begin{itemize}
+  \item Commands/options are in \texttt{typewriter font}
+  \item URLs are highlighted in \href{https://genome-euro.ucsc.edu/cgi-bin/hgGateway}{blue} (you should be able to browse the hyperlink)
+  % \item Exercises are highlighted in {\color{red}red}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Exercise: Web browsing the genome}
+  \begin{itemize}
+  \item \href{https://genome-euro.ucsc.edu/cgi-bin/hgGateway}{Launch the UCSC Genome Browser}
+  \item  Specify \texttt{Human Assembly hg19}    
+  \item Click \texttt{go}
+  \end{itemize}
+
+  By default, the Genome Browser will render a genomic window with many data layers on it. How are these data encoded?
+
+  \begin{itemize}
+  \item Click \texttt{UCSC Genes} from the \texttt{Genes and Gene Predictions} section under the main genomic window.
+  \item  Click \texttt{View table schema} opens \href{https://genome-euro.ucsc.edu/cgi-bin/hgTables?db=hg19&hgta_group=genes&hgta_track=knownGene&hgta_table=knownGene&hgta_doSchema=describe+table+schema}{knownGene table schema}
+    \end{itemize}
+
+  \end{frame}
+
+  \begin{frame}
+    \frametitle{knownGene table schema}
+\includegraphics[width=\linewidth]{figures/knownGene.png}
+
+  \end{frame}
+
+
+  \begin{frame}
+    \frametitle{knownGene table schema}
+
+So they are database entries with \textbf{chrom}, \textbf{start} and \textbf{end} features. This is the most standard data representation in genomics: data refering to genomic coordinates. Why?
+
+  \end{frame}
+
+
+
+  \begin{frame}
+    \frametitle{Discussion}
+    \begin{itemize}
+    \item Which would be the most efficient file format to store data related to human genomes?
+
+    \end{itemize}
+
+  \end{frame}
+
+
+
+
+
+
+% \section{Genomics data management}
+
+
+\begin{frame}
+  \frametitle{Commonly used formats}
+  \begin{itemize}
+
+  \item  Reference genomes
+
+  \item  Fasta and FastQ (Unaligned sequences)
+ 
+  \item SAM/BAM (Alignments)
+ 
+  \item BED (Genomic ranges)
+ 
+  \item GFF/GTF (Gene annotation)
+ 
+  \item BEDgraphs (Genomic ranges)
+ 
+  \item Wiggle files, BEDgraphs and BigWigs (Genomic scores).
+ 
+  \item Indexed BEDgraphs/Wiggles
+
+  \item VCFs (variants)
+
+  \end{itemize}
+\end{frame}
+
+% \begin{frame}
+% \frametitle{Selecting the optimal genomic data format}
+% \begin{itemize}
+% \item Will multiple types of features be stored in the same file?
+% Does rich attribute information need to be saved in the file?
+% Are features discontinuous?
+% Is the computing environment limited for processing power or memory and/or is the feature annotation very large?
+
+% \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Reference genomes}
+  \begin{itemize}
+  \item Reference genomes describe the 'consensus' DNA sequence 
+  \item (The human genome from whom? What does consensus mean?)
+  \item Human variation aside, multiple assemblies have been released (i.e. hg18, hg19...)
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sanger sequencing Nature 409, 863 (2001)}
+\centering
+\includegraphics[width=0.8\linewidth]{figures/10[1]_1038_nature01410-f1_full.jpg}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Hierarchical shotgun Nature 409, 863 (2001)}
+\centering
+\includegraphics[width=0.7\linewidth]{figures/v409_p861_409860a0-f2_FULL.jpg}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Reference genomes}
+  GRCh stands for `Genome Reference Consortium`
+  \begin{itemize}
+  \item Human \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.13/}{GRCh37} (hg19)
+  \item Human \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001405.38}{GRCh38}
+  \item Mouse \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.20/}{mm10}
+  \item Mouse \href{https://www.ncbi.nlm.nih.gov/assembly/GCF_000001635.26}{GRCm38}
+
+  \item Zebrafish, chicken and others: \url{https://www.ncbi.nlm.nih.gov/grc}{The Genome Reference consortium}
+
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Activity: sequence retrieval}
+  \begin{itemize}
+  \item Retrieve the sequence of the human chromosome 7...
+  \item ... and make it traceable, replicable and reproducible
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Automation}
+  \begin{itemize}
+  \item Using a Web browser to retrieve genomic sequences is not efficient nor reproducible: programmatic alternatives exist
+  \item Need of standardizing data analysis using reproducible workflows
+    \begin{itemize}
+
+    \item Scripts for data retrieval (bash, R, python...)
+    \item Keeping track of data analysis steps and avoiding manual editing
+    \item Data storage: standards (fasta, fastq, sam, vcf...)
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+
+\begin{frame}
+  \frametitle{Reproducibility}
+  \begin{itemize}
+  \item What do we mean by data science reproducibility? and replicability? and repeatability?
+  \item In data science: avoid manual steps of data analysis using scripts plus version control systems
+  \item Magics, blackboxes, untraceable stuff include:
+    \begin{itemize}
+    \item Spreadsheet manual editing
+    \item Find-and-replace using a text editor
+    \item Antyhing that involves mouse clicks without any log/macro
+    \end{itemize}
+  \end{itemize}
+
+  % image gere
+\end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{Reproducibility: reading}
+%   \begin{itemize}
+%   \item Paper: \url{https://www.nature.com/news/1-500-scientists-lift-the-lid-on-reproducibility-1.19970}
+%     \end{itemize}
+% \end{frame}
+
+\begin{frame}
+  \frametitle{Is there a reproducibility crisis?}
+\centering
+\includegraphics[width=0.8\textwidth]{figures/repro1.png}
+
+{\tiny Baker M (2016) Is there a reproducibility crisis? Nature 533:452–454 9}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Is there a reproducibility crisis?}
+\centering
+\includegraphics[height=0.8\textheight]{figures/repro2.png}
+
+{\tiny Baker M (2016) Is there a reproducibility crisis? Nature 533:452–454 9}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The causes}
+\centering
+\includegraphics[height=0.8\textheight]{figures/repro3.png}
+
+{\tiny Baker M (2016) Is there a reproducibility crisis? Nature 533:452–454 9}
+\end{frame}
+
+\begin{frame}
+  \frametitle{The alternatives}
+\centering
+\includegraphics[height=0.8\textheight]{figures/repro4.png}
+
+{\tiny Baker M (2016) Is there a reproducibility crisis? Nature 533:452–454 9}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Good practices}
+  \begin{itemize}
+  \item Data
+    \begin{enumerate}
+    \item Using data standards
+    \item Raw data availability
+    \item Metadata
+    \item Intermediate datasets availability (mid-processed, i.e. BED files)
+    \end{enumerate}
+  \item In data analysis
+    \begin{enumerate}
+    \item Scripting everything
+    \item Version control
+    \item Trace software versions/automate installs
+    \item Release all code as supplementary information
+    \end{enumerate}
+  % \item What if we don't know how to program?
+  %   \begin{itemize}
+  %   \item Still, switching to command-line tools and keeping track of the commands used
+  %   \item Request the source code when collaborating with computational biologists
+  %   \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Good practices}
+ \begin{itemize}
+  \item What if we don't know how to program?
+    \begin{itemize}
+    \item Still, switching to command-line tools and keeping track of the commands used
+    \item Request the source code when collaborating with computational biologists
+    \end{itemize}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Cautionary note: science is science}
+\centering
+\includegraphics[height=0.7\textheight]{figures/repro_soccer.png}
+
+{\tiny \url{https://fivethirtyeight.com/features/science-isnt-broken}}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{The terminal}
+  \begin{itemize}
+    
+  \item Simple command line interface 
+  \item Present in MacOS and GNU/Linux
+  \item Interprets the Unix shell language (commonly bash)
+  \item Even though can be used in an interactive manner, commands can be written and stored as a script (=workflow, =pipeline)
+  \item (A bash script is, probably, the simplest way of making a workflow repeatable)
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{UNIX}
+  \begin{itemize}
+  \item Efficient
+  \item Scalable
+  \item Portable
+  \item Open
+  \end{itemize}
+\end{frame}
+% \begin{frame}
+%   \frametitle{Basic shell commands}
+% \centering
+% \includegraphics[width=0.8\linewidth]{figures/bash.png}
+% \end{frame}
+
+
+\begin{frame}
+  \frametitle{Unix philosophy}
+According to Peter H. Salus in A Quarter-Century of Unix (1994):
+  \begin{itemize}
+  \item Write programs that do one thing and do it well
+  \item Write programs to work together
+  \item Write programs to handle text streams, because that is a universal interface
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Why in bioinformatics?}
+  \begin{itemize}
+  \item We interpret DNA, proteins as text; Unix is for text streams.
+  \item Data are big (millions of lines of text, easily a couple of GB); spreadsheet software (Excel) cannot handle them.
+  \item We need to keep track of our analysis for the sake of reproducibility: bash scripts.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Opening a terminal in MacOS}
+\centering
+\includegraphics[width=0.8\linewidth]{figures/terminal.jpg}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Opening a terminal in GNU/Linux}
+\centering
+\includegraphics[width=0.8\linewidth]{figures/terminal_debian.png}
+\end{frame}
+
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Checking filetypes using \texttt{file}}
+%   \begin{itemize}
+%   \item To check file types we can use the \texttt{file} terminal command
+%   \item Make sure the file you created is ASCII text!
+%   \end{itemize}
+% \begin{verbatim}
+% [imallona@neutral tmp]$ file coordinate_file_formats.pdf 
+% coordinate_file_formats.pdf: PDF document, version 1.5
+% [imallona@neutral tmp]$ file coordinate_file_formats.tex
+% coordinate_file_formats.tex: LaTeX 2e document, ASCII text
+% \end{verbatim}
+
+
+% \end{frame}
+
+
+
+
+% \begin{frame}
+% \frametitle{Exercise}
+% \begin{itemize}
+% \item Create a folder named \texttt{soft}
+% \item Move into the folder
+% \item Create a folder named \texttt{kent}
+% \item Move into that folder
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+% \frametitle{Exercise}
+% \begin{verbatim}
+% cd ## goes to your home directory
+% mkdir soft
+% cd soft
+% mkdir kent
+% cd kent
+% \end{verbatim}
+
+% \end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{The shell (Unix shell)}
+%   \begin{itemize}
+%   \item The Unix shell allows to save the sequential commands in a reproducible manner
+%   \item Activity: run the tutorial by the Swiss Institute of Bioinformatics \url{https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html}
+%   \end{itemize}
+% \end{frame}
+
+
+  % \item Reading \url{https://blog.teamtreehouse.com/introduction-to-the-mac-os-x-command-line}
+
+
+
+
+\begin{frame}
+  \frametitle{A quick reminder on computer files}
+  \begin{itemize}
+  \item  Files are data representations stored in computers as arrays of bytes
+  \item File type is defined by its bytes and not by the filename extension
+  \item Files contain metadata
+  \item Importantly, plain text files are composed by bytes mapped directly to ASCII characters
+  \item Text editors (notepad, gedit, vim...) allow editing plain text files
+  \item (text files can be read without proprietary software)
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Questions}
+  \begin{itemize}
+  \item Sequences are often stored as FASTA, i.e.
+\begin{verbatim}
+>hg_19_chr7_short_version
+tatatata
+\end{verbatim}
+  \item How to save this to a file to be a fasta?
+    \begin{enumerate}
+    \item Edit it with a text editor and save it as \texttt{test.fasta}
+    \item Edit it with a text editor and save it as \texttt{test.fa}
+    \item Edit it with a text editor and save it as \texttt{test.png}
+    \item Edit it with a LibreOffice Writer and save it as an ODT file named \texttt{test.odt}
+    \item Edit it with a LibreOffice Writer and save it as an ODT file named \texttt{test.fasta}
+    \item Edit it with a R and \texttt{save()} it as an Rdata object \texttt{test.Rdata}
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Questions}
+  \begin{itemize}
+  \item Sequences are often stored as FASTA, i.e.
+\begin{verbatim}
+>test
+acgt
+\end{verbatim}
+  \item How to save this to a file to be a fasta?
+    \begin{enumerate}
+    \item[YES] Edit it with a text editor and save it as \texttt{test.fasta} 
+    \item[YES] Edit it with a text editor and save it as \texttt{test.fa}
+    \item[YES WTF] Edit it with a text editor and save it as \texttt{test.png}
+    \item[NO] Edit it with a LibreOffice Writer and save it as an ODT file named \texttt{test.odt}
+    \item[NO] Edit it with a LibreOffice Writer and save it as an ODT file named \texttt{test.fasta}
+    \item[NO] Edit it with a R and \texttt{save()} it as an Rdata object \texttt{test.Rdata}
+    \end{enumerate}
+  \end{itemize}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Setting up the Mac text editor to save text}
+
+  \begin{itemize}
+  \item Create new file
+  \item Go to \texttt{Format} and select \texttt{Make Plain Text}
+  \item For saving, go to \texttt{File}, \texttt{Save As} and \texttt{Plain Text Encoding setting: Unicode (UTF-8).}
+ 
+  \end{itemize}
+
+\end{frame}
+
+% \begin{frame}
+%   \frametitle{}
+% \includegraphics[width=\linewidth]{}
+% \end{frame}
+
+
+\begin{frame}
+  \frametitle{Avoiding RTF in Mac: plain text}
+\centering
+\includegraphics[width=0.7\linewidth]{figures/mac-plain-txt.png}
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Avoiding RTF in Mac: plain text}
+\centering
+\includegraphics[width=0.7\linewidth]{figures/mac-plain-txt2.png}
+\end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{Turning off autospell check in Mac}
+%   \begin{itemize}
+%   \item UNIX commands are case sensitive
+%   \item By default, TextEdit capitalizes/spell checks contents
+%   \item How to disable this feature \url{http://osxdaily.com/2014/05/06/turn-off-autocorrect-pages-textedit-mac/}
+%   \end{itemize}
+% \end{frame}
+
+
+
+\begin{frame}
+  \frametitle{Shell scripting}
+  \begin{itemize}
+  \item Write on top the \href{https://en.wikipedia.org/wiki/Shebang_(Unix)}{shebang}
+  \item Write the date and what's the script about, your name and date
+  \item Tip: comment lines start with \#
+  \item Introduce the commands (one line each)
+  \item Save it as a text file!
+  \item Commit the changes/backup the file
+  \item Run the script to run the commands in batch typing \texttt{bash\ name\_of\_the\_script.sh}
+  \end{itemize}
+
+  
+\end{frame}
+
+% \newsavebox\myv
+
+% \begin{frame}[fragile]
+%   \frametitle{Software installs}
+% \begin{lrbox}{\myv}\begin{minipage}{\textwidth}
+% \begin{verbatim}
+% curl http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/bedToBigBed \
+%    > bedToBigBed
+% curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/hg19.genome \
+%    > hg19.genome
+% curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/example.bed \
+%    > example.bed
+
+% ## adding exec permissions to the binary
+% chmod a+x bedToBigBed
+
+% ## running the actual command
+% ./bedToBigBed example.bed hg19.genome out.bb
+% \end{verbatim}
+% \end{minipage}\end{lrbox}
+
+% \resizebox{0.95\textwidth}{!}{\usebox\myv}
+
+% \end{frame}
+
+
+\begin{frame}
+\frametitle{Reproducibility for software}
+\begin{itemize}
+\item UNIX solves the reproducibility, scalability and openness for data (text) streams, but extra software might be needed
+\item The importance of software versioning for reproducibility: keeping track of the software installed
+\item Using open source software (no blackboxes!)
+\item Installs can be run command-line, so specific versions can be stored and included into the analysis script
+\end{itemize}
+  
+\end{frame}
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Software installs}
+%   (The code is available at the \href{https://github.com/baudisgroup/BIO392-Github/blob/master/assets/imallona/3_exercises.md}{exercises file})
+
+% \begin{tiny}
+% \begin{verbatim}
+% #!/bin/bash
+
+% cd ~ # goes to your home folder 
+% mkdir -p soft/kent
+% cd soft/kent
+
+% curl http://hgdownload.soe.ucsc.edu/admin/exe/macOSX.x86_64/bedToBigBed \
+%    > bedToBigBed
+% curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/hg19.genome \
+%    > hg19.genome
+% curl http://gattaca.imppc.org/groups/maplab/imallona/teaching/example.bed \
+%    > example.bed
+
+% ## adding exec permissions to the binary
+% chmod a+x bedToBigBed
+
+% ## running the actual command
+% ./bedToBigBed example.bed hg19.genome out.bb
+% \end{verbatim}
+% \end{tiny}
+
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Compiling bedtools}
+%   \begin{itemize}
+%   \item BEDtools as toolset
+%   \item Activity: read paper \url{https://academic.oup.com/bioinformatics/article/26/6/841/244688}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Compiling software in Unix}
+%   \begin{itemize}
+%   \item The importance of Makefiles
+%   \item Activity: read \url{https://en.wikipedia.org/wiki/Makefile}
+%   \end{itemize}
+% \end{frame}
+
+
+
+
+\begin{frame}[fragile]
+  \frametitle{Compiling software -  bedtools}
+  (The code is available at the exercises file)
+Please note this is a bash script and specifies the exact software version to install
+
+   \begin{small}
+\begin{verbatim}
+#!/bin/bash
+
+cd # to your home directory
+mkdir -p soft # creates a folder
+cd soft # goes there
+
+# the url is chopped into two pieces for readability
+url_base=https://github.com/arq5x/bedtools2/releases/download/
+curl -L "$url_base"/v2.25.0/bedtools-2.25.0.tar.gz \
+  > bedtools-2.25.0.tar.gz
+
+tar zxvf bedtools-2.25.0.tar.gz
+cd bedtools2
+make
+alias bedtools='./bin/bedtools'
+\end{verbatim}
+  \end{small}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Next...}
+  \begin{itemize}
+
+  \item Fasta (Reference genomes)
+
+  \item (Multi)fasta and FastQ (Unaligned sequences)
+ 
+  \item SAM/BAM (Alignments)
+ 
+  \item BED (Genomic ranges)
+ 
+  \item GFF/GTF (Gene annotation)
+ 
+  \item Wiggle files, BEDgraphs and BigWigs (Genomic scores).
+ 
+  \item Indexed BEDgraphs/Wiggles
+
+  \item VCFs (variants)
+
+  \end{itemize}
+\end{frame}
+
+
+
+\end{document}
+
+
+% \begin{frame}
+%   \frametitle{Genomic standards}
+% % lingua franca etc
+%   \begin{itemize}
+
+%   \item  Reference genomes
+
+%   \item  Fasta and FastQ (Unaligned sequences)
+ 
+%   \item SAM/BAM (Alignments)
+ 
+%   \item BED (Genomic ranges)
+ 
+%   \item GFF/GTF (Gene annotation)
+ 
+%   \item BEDgraphs (Genomic ranges)
+ 
+%   \item Wiggle files, BEDgraphs and BigWigs (Genomic scores).
+ 
+%   \item Indexed BEDgraphs/Wiggles
+
+%   \item VCFs (variants)
+
+%   \end{itemize}
+% \end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{Reference genomes: FASTA}
+%   \begin{itemize}
+%   \item A reference genome is a collection of contigs/scaffolds
+%   \item  A contig is a stretch of DNA sequence encoded as A,G,C,T,N.	
+%   \item  Typically comes in FASTA format.		
+%   \item  ">" line contains the scaffold name
+%   \item  Following lines contain the sequence (single line, 80 nt-column sized...)
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{Reference genomes: FASTA}
+%   \begin{verbatim}
+% >NC_009902.1 Babesia bovis T2Bo mitochondrion, complete genome
+% TTTAAAAAAGTGTTAAAAACTTTATACATTAAAAAATTTAAACAAGTGATCATGTATAAAGTACACTTGT
+% TACTGTGTAAATATCAAAAACAATTTAATTTCAAAATTTTTGAAATATGTTTTTTGTGTTGTGTTATAAA
+% GTTTTTTTTCAAAATTATATATGTTTGCATTTGCTGGATATAGTTCGGTCTCTGCAAACCATAAAGTCAT
+% CGGTATATCCTACATATGGCTTTCATATTGGTTTGGAGTTATTGGATTTTATATGAGTATTTTGATAAGA
+% ACAGAATTGAGTATGAGTGGTTTAAAGATTATGACAATGGATACTCTTGAGATATACAATATGATGTTTT
+%   \end{verbatim}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Unaligned sequences (from sequencers): FASTQ}
+%   \begin{itemize}
+%   \item FASTQs stands for FASTA with Qualities
+%   \item Plain text files with chunks of four lines:
+%     \begin{itemize}
+%     \item  @ identifier line
+%     \item Sequence
+%     \item  "+" 	
+%     \item Quality scores (different encodings exist)
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Unaligned sequences (from sequencers): FASTQ}[fragile]
+%   \begin{itemize}
+%   \item FASTQ header
+%     \begin{itemize}
+%     \item 
+%     \end{itemize}
+%   \item Qualities
+%     \begin{itemize}
+%     \item 
+%     \end{itemize}
+%   \end{itemize}
+% \end{frame}
+
+
+
+% \begin{frame}[fragile]
+%   \frametitle{Unaligned sequences (from sequencers): FASTQ (paired end)}
+%   \begin{itemize}
+%   \item  machine name HS2000-887\_89 - Machine name.		
+%   \item  5 - Flowcell lane.		
+%   \item  read in pair
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}[fragile]
+%   \frametitle{FASTQ qualities}
+%   \begin{itemize}
+%   \item  phred score -log10 probability of sequence being wrong
+%   \item  encoded in ASCII
+
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Alignment process}
+% % figure here
+% % gaps etc 
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Alignment file format}
+%   \begin{itemize}
+%   \item  SAM - Sequence Alignment Map.	
+%   \item  Standard format for sequence data	
+%   \item  Recognised by majority of software and browsers.
+%   \item  Standards are important!
+
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{SAM format}
+%   \begin{itemize}
+%   \item  SAM stands for Sequence Alignment Map.	
+%   \item  Standard format for sequence data	
+%   \item Recognised by majority of software and browsers.
+
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Aligned sequences}
+
+%   \begin{itemize}
+%   \item  Chromosome
+%   \item  Locus (coordinate)
+%   \item  CIGAR string, i.e.
+%   \item 30M1D2M - 30 bases continuously match, 1 deletion from reference, 2 base match	
+%   \item  Flags (\url{https://broadinstitute.github.io/picard/explain-flags.html})
+
+%   \end{itemize}
+
+% \end{frame}
+
+
+
+% \begin{frame}
+%   \frametitle{BAM format}
+%  % Compilation into binary files
+
+% % get header etc
+% % etitle{}
+%   \begin{itemize}
+%   \item 
+%   \end{itemize}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{Keep it simple: count and transform into BED files}
+%   \begin{itemize}
+%   \item BED (Browser Extensible Data)
+
+%   \item BED3: 3 tab separated columns, chromosome (scaffold), start, end
+
+%   \item BED6: BED3 plus name, score, strand
+
+
+% % exercise: convert bed6 to bed3
+
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Comprexing and indexing}
+%   \begin{itemize}
+%   \item  SAM -> BAM (.bam and index file of .bai)		
+%   \item  Wiggle and bedGraph -> bigWig		
+%   \item  BED -> bigBed (.bb)		
+%   \end{itemize}
+% \end{frame}
+
+
+% \begin{frame}
+%   \frametitle{Data repositories}
+%   \begin{itemize}
+%   \item UCSC
+%   \item Ensembl
+% %  \item check the ones in github
+%   \end{itemize}
+
+% \end{frame}
+
+% % add reading exercises etc
+
+
+% % \begin{frame}
+% %   \frametitle{Exercise: reference genomes}
+% %   \begin{itemize}
+% %   \item Retrieve the mitochondrial genome from UCSC
+% %   \item 
+% %   \end{itemize}
+% % \end{frame}
+
+
+
+% \end{document}
+
+
+
+
+
+
+% \begin{frame}
+%   \frametitle{}
+% \includegraphics[width=\linewidth]{}
+% \end{frame}
+
+% \begin{frame}
+%   \frametitle{}
+%   \begin{itemize}
+%   \item 
+%   \end{itemize}
+% \end{frame}

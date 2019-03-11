@@ -2,7 +2,7 @@ Welcome to the _Introduction to Data Formats in Computationaly Biology_ exercise
 
 # Slides
 
-* [Unix](slides/1_why_standards_and_reproducibility.pdf)
+* [Why good practices and data standards?](slides/1_why_standards_and_reproducibility.pdf)
 * [Genomics](slides/genomic_data_formats.pdf)
 
 # Why? Good practices in computational biology
@@ -21,6 +21,29 @@ Recommended reads:
 
 These exercises are meant to be run under GNU/Linux or MacOS. To get basic training in UNIX please run the tutorial at [SIB Course on UNIX](https://edu.sib.swiss/pluginfile.php/2878/mod_resource/content/4/couselab-html/content.html) first.
 
+# Acknowledgements
+
+These materials are part of the [COST Project Epichembio Bioinformatics workshop: Introduction to NGS data analysis](http://www.carrerasresearch.org/ca/bioinformatics-workshop-introduction-to-ngs-data-analysis_97398) held in Barcelona the 13th to 15th of March 2019.
+
+* EU Horizon 2020 COST Project Epichembio
+* IJC Carreras Foundation
+* Organizers: Sarah, Marguerite-Marie, David, Roberto
+* SIB Swiss Institute of Bioinformatics and University of Zurich
+
+# Table of contents
+
+Exercises complexity goes from low to challenging. Namely, from counting the number of lines of a fasta file or using the modulus operator to do so in FASTQ to dissecting chromatin compartmentalization trends in 1000 genomes project transposon variants. Please note gluttony is encouraged but exercises listing exceeds the workshop's workload.
+
+* [Set up](https://github.com/imallona/compbio_data_formats#folders)
+* [Unix exercises](https://github.com/imallona/compbio_data_formats#exercises)
+* [FASTA and FASTQ](https://github.com/imallona/compbio_data_formats#fastqa-exercises)
+* [SAM](https://github.com/imallona/compbio_data_formats#sam-format)
+* [BED](https://github.com/imallona/compbio_data_formats#bed-format)
+* [GTF](https://github.com/imallona/compbio_data_formats#gtf)
+* [VCF](https://github.com/imallona/compbio_data_formats#vcf)
+* [Challenges/integration](https://github.com/imallona/compbio_data_formats#real-data-integration)
+* [Sum up](https://github.com/imallona/compbio_data_formats#exercise-38-sum-up)
+
 Cheatsheets:
 
 * [Shell](https://files.fosswire.com/2007/08/fwunixref.pdf)
@@ -30,7 +53,6 @@ For extra/advanced reading, please check the following tutorials on bash and awk
 
 * [Shell](http://www.grymoire.com/Unix/Sh.html)
 * [awk](http://www.grymoire.com/Unix/Awk.html)
-
 
 # Set up
 
@@ -75,19 +97,22 @@ head hg19.genome
 
 ## Retrieving software/compiling (bedtools)
 
-Retrieving source code and using a Makefile.
+Retrieving source code and using a Makefile to compile exactly the software version required.
 
 
 ```bash
+cd
+mkdir -p soft
 
-cd ~/course/soft
+cd soft
+
 curl -L https://github.com/arq5x/bedtools2/releases/download/v2.25.0/bedtools-2.25.0.tar.gz \
   > bedtools-2.25.0.tar.gz
 
 tar zxvf bedtools-2.25.0.tar.gz
 cd bedtools2
-make  ## will take time!
-alias bedtools='~/course/soft/bedtools2/bin/bedtools'
+make  ## will take time! you could read about Makefiles during compiling time
+alias bedtools='~/soft/bedtools2/bin/bedtools'
 
 bedtools --help
 

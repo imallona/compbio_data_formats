@@ -519,6 +519,264 @@ wc -l chr22_with_ERCC92.gtf
 </details>
 
 
+# BED format
+
+## Exercise 16
+
+<!-- bed6 to bed3 -->
+
+Transform the file `~/course/soft/bedtools2/test/intersect/a.bed` (BED6) to BED3 (tip: use awk to extract the first three columns).
+
+Tip: `OFS='\t'` in awk specifies the output field separator: a tab (`\t`).
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+## to go to the a.bed file directory
+cd ~/course/soft/bedtools2/test/intersect/
+
+awk -v OFS='\t' '{print $1,$2,$3}' a.bed
+
+cd - ## to go back to the previous directory
+
+```
+</p>
+</details>
+
+
+## Exercise 17
+
+Transform the BED3 file ` ~/course/soft/bedtools2/test/intersect/recordsOutOfOrder.bed` to BED6 (unspecified strand, 0 score)
+
+Tip: check the [BED6 file specification](https://genome.ucsc.edu/FAQ/FAQformat.html#format1)
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+## to go to the a.bed file directory
+cd ~/course/soft/bedtools2/test/intersect/
+
+awk -v OFS='\t' '{print $1,$2,$3,".",0,"."}' \
+  recordsOutOfOrder.bed
+
+cd - ## to go back to the previous directory
+
+```
+</p>
+</details>
+
+
+## Exercise 18
+
+Add a nucleotide to the start and subtract a nucleotide to the end to all records, regardless of the strand, to the file `~/course/soft/bedtools2/test/intersect/a.bed`.
+
+Tip: use `awk`.
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+## to go to the a.bed file directory
+cd ~/course/soft/bedtools2/test/intersect/
+
+awk -v OFS='\t' '{print $1,$2-1,$3+1,$4,$5,$6}' a.bed
+
+cd - ## to go back to the previous directory
+
+```
+</p>
+</details>
+
+
+
+<!-- awk half open etc -->
+
+
+## Exercise 19
+
+
+Use [bedtools intersect](http://bedtools.readthedocs.io/en/latest/content/tools/intersect.html#intersect) to find overlapping genomic features. The [BEDtools paper](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC2832824/) is also very helpful to understand the genomic arithmetics analysis (without sequences, using coordinates).
+
+For this and the next exercises we use some example datasets from the bedtools sourcecode we compiled in one of the first activities. For instance, you could check them i.e. at `~/course/soft/bedtools2/test/intersect/`.
+
+Check the `~/course/soft/bedtools2/test/intersect/a.bed` and `~/course/soft/bedtools2/test/intersect/b.bed` files content. Are they BED3, BED6 or BED12 files?
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+cat ~/course/soft/bedtools2/test/intersect/a.bed
+cat ~/course/soft/bedtools2/test/intersect/b.bed
+```
+</p>
+</details>
+
+## Exercise 20
+
+What will happen if you intersect those files? For example, the `a.bed` region chr1:100-200 overlaps with `b.bed`
+
+```bash
+alias bedtools='~/course/soft/bedtools2/bin/bedtools'
+
+bedtools intersect \
+  -a  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -b  ~/course/soft/bedtools2/test/intersect/b.bed
+
+```
+
+Which is the format of the output? How are results interpreted?
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+The output is a direct intersect:
+
+```bash
+
+chr1	100	101	a2	2	-
+chr1	100	110	a2	2	-
+```
+
+Starting from the original interval from a.bed:
+
+```bash
+chr1        100     200     a2      2       -
+
+```
+
+And the overlapping intervals from b.bed:
+
+```bash
+chr1        90      101     b2      2       -
+chr1        100     110     b3      3       +
+```
+
+</p>
+</details>
+
+## Exercise 21
+
+What does it happen if running `bedtools intersect` with the `a.bed` file as `-b` and the `b.bed` file as `-a`?
+
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+bedtools intersect \
+  -b  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -a  ~/course/soft/bedtools2/test/intersect/b.bed
+```
+
+Tip: check the strands
+</p>
+</details>
+
+## Exercise 22
+
+Run bedtools intersect with the `a.bed` file as `-a`,  the `b.bed` file as `-b` but forcing strandness, i.e. reporting hits in B that overlap A on the same strand
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+bedtools intersect \
+  -s \
+  -a  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -b  ~/course/soft/bedtools2/test/intersect/b.bed
+```
+  
+</p>
+</details>
+
+## Exercise 23
+
+Use the `-v` to report those intervals in `a.bed` that do not overlap any of the intervals in `b.bed`.
+
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+bedtools intersect \
+  -v \
+  -a  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -b  ~/course/soft/bedtools2/test/intersect/b.bed
+```
+
+You can explore what happens if inverting the -a and -b flags; for this the -wa and -wb flags might be helpful
+
+```bash
+
+bedtools intersect \
+  -v \
+  -wa -wb \
+  -b  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -a  ~/course/soft/bedtools2/test/intersect/b.bed
+  ```
+  
+</p>
+</details>
+
+
+## Exercise 24
+
+
+Use the `-wao` flag to report the amounts of overlap for all features when comparing `a.bed` and `b.bed`, including those that do not overlap. How are non overlaps encoded? Which strand are they on?
+
+<details><summary>
+Answer
+</summary>
+
+<p>
+
+```bash
+
+bedtools intersect \
+  -wao \
+  -a  ~/course/soft/bedtools2/test/intersect/a.bed \
+  -b  ~/course/soft/bedtools2/test/intersect/b.bed
+```
+
+</p>
+</details>
+
+
+
+
 ## Exercise 26
 
 Retrieve the details of transcript `ENST00000342247` (tip: use grep) from the
